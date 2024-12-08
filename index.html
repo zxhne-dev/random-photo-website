@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>main_page</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Caveat+Brush&display=swap');
+        
+        *{
+            font-family: "Caveat Brush", cursive;
+            font-weight: 400;
+            font-style: normal;
+        }
+            
+        :root {
+            --glow: #ff69b4;
+        }
+
+        body {
+            padding: 0;
+            margin: 0;
+            background-image: url("background.png");
+            background-repeat: no-repeat;
+            background-size: 100% 100%;
+            background-attachment: fixed;
+        }
+        .main {
+            text-align: center;
+            margin: 4vh;
+        }
+        h1 {
+            margin-top: 3vh;
+            margin-bottom: 0;
+            text-align: center;
+            font-size: 8vh;
+            color: white;
+            text-shadow: 0 0 0.65vh #000000, 0 0 0.91vh #000000;
+        }
+        p {
+            margin: 0;
+            font-size: 4vh;
+            color: white;
+            text-shadow: 0 0 0.65vh #000000, 0 0 0.91vh #000000;
+        }
+        button {
+            margin-bottom: 4vh;
+            background: linear-gradient(45deg, #ff69b4, #ff1493);
+            border: none;
+            padding: 2vh 4vh;
+            font-size: 3vh;
+            border-radius: 6.5vh;
+            color: white;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s;
+            animation: bounce 1s infinite;
+            box-shadow: 0 0 2.6vh var(--glow);
+        }
+        button:hover {
+            transform: scale(1.1);
+            animation: wiggle 0.5s infinite;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-1.3vh); }
+        }
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(0deg) scale(1.1); }
+            25% { transform: rotate(-5deg) scale(1.1); }
+            75% { transform: rotate(5deg) scale(1.1); }
+        }
+        #zdjecieContainer {
+            margin-top: 1.3vh;
+            max-width: 40%;
+            margin-left: auto;
+            margin-right: auto;
+            
+        }
+        video {
+            max-width: 100%;
+            height: auto;
+            border: 0.13vh solid #ccc;
+            box-shadow: 0 0 2.6vh var(--glow);
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            border: 0.13vh solid #ccc;
+            box-shadow: 0 0 2.6vh var(--glow);
+        }
+        @media (max-width: 100vh) {
+            #zdjecieContainer {
+                max-width: 100%;
+            }
+        }
+        marquee {
+            width: 100%;
+            background-color: beige;
+            padding: 0.01vh;
+            margin: auto;
+        }
+        a {
+            font-size: 2.1vh;
+            padding-left: 2.6vh;
+            padding-right: 2.6vh;
+            text-decoration: none;
+            display: inline-block;
+            border: 0.13vh solid transparent;
+        }
+        a:hover {
+            background-color: rgb(66, 243, 213);
+            border: 0.13vh solid rgb(34, 34, 34);
+        }
+        .sparkle {
+            position: absolute;
+            background: white;
+            width: 0.5vh;
+            height: 0.5vh;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <marquee behavior="alternate" direction="right" onmouseover="this.stop();" onmouseout="this.start();">
+        <a target="_blank" title="yt" href="https://youtu.be/dQw4w9WgXcQ?si=BwctSEnq5Hyj0IaA">💖💗🥰💞</a>
+    </marquee>
+    <h1 id="napis">Wylosuj zdjęcie</h1>
+    <div class="main">
+        <button class="fancy-button" onclick="getRandomMedia(); klik(); tooMany();">LOSUJ</button>
+        <div id="zdjecieContainer"></div>
+    </div>
+    <script>
+        window.addEventListener('load', function () {
+            let adsDiv = document.getElementById('ads');
+            let ads_bottom_static = document.getElementById('ads_bottom_static');
+            if (adsDiv || ads_bottom_static) {
+                adsDiv.remove();
+                ads_bottom_static.remove();
+            }
+        });
+
+        function getRandomMedia() {
+            fetch('get_random_image.php')
+                .then(response => response.json())
+                .then(data => {
+                    const fileExtension = data.nazwa_pliku.split('.').pop().toLowerCase();
+                    const mediaElement = fileExtension === 'mp4' ? document.createElement('video') : document.createElement('img');
+                    mediaElement.src = 'img/' + data.nazwa_pliku;
+                    mediaElement.autoplay = true;
+                    mediaElement.loop = true;
+                    const mediaContainer = document.getElementById('zdjecieContainer');
+                    mediaContainer.innerHTML = '';
+                    mediaContainer.appendChild(mediaElement);
+                    const captionElement = document.createElement('p');
+                    captionElement.innerText = data.podpis;
+                    mediaContainer.appendChild(captionElement);
+                })
+                .catch(error => console.error('Błąd pobierania danych: ', error));
+        }
+
+        const button = document.querySelector('.fancy-button');
+
+        function createSparkle(e) {
+            const buttonRect = e.currentTarget.getBoundingClientRect();
+            for (let i = 0; i < 10; i++) {
+                const sparkle = document.createElement('div');
+                sparkle.className = 'sparkle';
+                const x = buttonRect.left + Math.random() * buttonRect.width;
+                const y = buttonRect.top + Math.random() * buttonRect.height;
+                sparkle.style.left = x + 'px';
+                sparkle.style.top = y + 'px';
+                document.body.appendChild(sparkle);
+                const angle = Math.random() * Math.PI * 2;
+                const velocity = 1 + Math.random() * 5;
+                const tx = Math.cos(angle) * 100 * velocity;
+                const ty = Math.sin(angle) * 100 * velocity;
+                sparkle.animate([
+                    { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+                    { transform: `translate(${tx}px, ${ty}px) scale(0)`, opacity: 0 }
+                ], {
+                    duration: 1000,
+                    easing: 'cubic-bezier(0,0,0.2,1)'
+                }).onfinish = () => sparkle.remove();
+            }
+        }
+
+        button.addEventListener('click', createSparkle);
+
+        function klik() {
+            var audio = new Audio('bubble.mp3');
+            audio.play();
+        }
+
+        let clickCount = 0;
+
+        function tooMany() {
+            clickCount++;
+            if (clickCount > 10) {
+                const napis = document.getElementById('napis'); 
+                napis.innerHTML = 'too many clicks......';
+                const mainDiv = document.querySelector('.main'); 
+                mainDiv.innerHTML = `<blockquote class="tiktok-embed" cite="https://www.tiktok.com/@daailydrive/video/7314672689002663200" data-video-id="7314672689002663200" style="max-width: 42vh;min-width: 42vh;"> <section> </section> </blockquote>`; 
+                const script = document.createElement('script');
+                script.src = "https://www.tiktok.com/embed.js"; 
+                script.async = true; 
+                mainDiv.appendChild(script); 
+            } 
+        }
+    </script>
+</body>
+</html>
